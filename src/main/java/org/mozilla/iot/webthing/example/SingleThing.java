@@ -16,7 +16,7 @@ import java.util.UUID;
 
 public class SingleThing {
     public static Thing makeThing() {
-        Thing thing = new Thing("My Lamp",
+        Thing thing = new Thing("杨子祺的台灯",
                                 new JSONArray(Arrays.asList("OnOffSwitch",
                                                             "Light")),
                                 "A web connected lamp");
@@ -38,11 +38,11 @@ public class SingleThing {
         brightnessDescription.put("description",
                                   "The level of light from 0-100");
         brightnessDescription.put("minimum", 0);
-        brightnessDescription.put("maximum", 100);
+        brightnessDescription.put("maximum", 200);
         brightnessDescription.put("unit", "percent");
         thing.addProperty(new Property(thing,
                                        "brightness",
-                                       new Value(50),
+                                       new Value(67),
                                        brightnessDescription));
 
         JSONObject fadeMetadata = new JSONObject();

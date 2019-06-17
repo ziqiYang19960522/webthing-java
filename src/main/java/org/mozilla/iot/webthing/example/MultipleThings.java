@@ -13,7 +13,9 @@ import org.mozilla.iot.webthing.errors.PropertyError;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public class MultipleThings {
@@ -54,7 +56,7 @@ public class MultipleThings {
      */
     public static class ExampleDimmableLight extends Thing {
         public ExampleDimmableLight() {
-            super("My Lamp",
+            super("杨子祺的台灯",
                   new JSONArray(Arrays.asList("OnOffSwitch", "Light")),
                   "A web connected lamp");
 
@@ -162,28 +164,133 @@ public class MultipleThings {
      * A humidity sensor which updates its measurement every few seconds.
      */
     public static class FakeGpioHumiditySensor extends Thing {
-        private final Value<Double> level;
+        private final Value<Double> temperature;
+        private final Value<Double> humidity;
+        private final Value<Double> pm2p5CC;
+        private final Value<Double> pm10CC;
+        private final Value<Double> VOCH2S;
+        private final Value<Double> CH20NH3;
+
+        //数据结构体变量，存储传感器的信息
+        /**
+         * { temperature: 277,
+         *   humidity: 398,
+         *   pm2p5CC: 6,
+         *   pm10CC: 8,
+         *   VOCH2S: 5,
+         *   CH20NH3: 0 }
+         */
+        private Map<String, Double> dataStucture;
+
 
         public FakeGpioHumiditySensor() {
-            super("My Humidity Sensor",
-                  new JSONArray(Arrays.asList("MultiLevelSensor")),
-                  "A web connected humidity sensor");
-
-            JSONObject levelDescription = new JSONObject();
-            levelDescription.put("@type", "LevelProperty");
-            levelDescription.put("title", "Humidity");
-            levelDescription.put("type", "number");
-            levelDescription.put("description", "The current humidity in %");
-            levelDescription.put("minimum", 0);
-            levelDescription.put("maximum", 100);
-            levelDescription.put("unit", "percent");
-            levelDescription.put("readOnly", true);
-            this.level = new Value<>(0.0);
+            super("房间传感器",
+                  new JSONArray(Arrays.asList("Monitor")),
+                  "A web connected air sensor");
+            //创建传感器结构体变量
+            dataStucture = new HashMap<>();
+            dataStucture.put("temperature", 0.0);
+            dataStucture.put("humidity", 0.0);
+            dataStucture.put("pm2p5CC", 0.0);
+            dataStucture.put("pm10CC", 0.0);
+            dataStucture.put("VOCH2S", 0.0);
+            dataStucture.put("CH20NH3", 0.0);
+            //1、温度
+            JSONObject temperatureDescription = new JSONObject();
+            temperatureDescription.put("@type", "TemperatureProperty");
+            temperatureDescription.put("title", "Temperature");
+            temperatureDescription.put("type", "number");
+            temperatureDescription.put("description", "The current temperature in %");
+            temperatureDescription.put("minimum", -100);
+            temperatureDescription.put("maximum", 100);
+//            temperatureDescription.put("unit", "percent");
+            temperatureDescription.put("readOnly", true);
+            //从结构体中拿到温度值
+            this.temperature = new Value<>(dataStucture.get("temperature"));
             this.addProperty(new Property(this,
-                                          "level",
-                                          level,
-                                          levelDescription));
-
+                                          "temperature",
+                                          temperature,
+                                          temperatureDescription));
+            //2、湿度
+            JSONObject humidityDescription = new JSONObject();
+            humidityDescription.put("@type", "LevelProperty");
+            humidityDescription.put("title", "Humidity");
+            humidityDescription.put("type", "number");
+            humidityDescription.put("description", "The current humidity in %");
+            humidityDescription.put("minimum", 0);
+            humidityDescription.put("maximum", 100);
+            humidityDescription.put("unit", "percent");
+            humidityDescription.put("readOnly", true);
+            //从结构体中拿到湿度值
+            this.humidity = new Value<>(dataStucture.get("humidity"));
+            this.addProperty(new Property(this,
+                                          "humidity",
+                                          humidity,
+                                          humidityDescription));
+            //3、pm2p5CC
+            JSONObject pm2p5CCDescription = new JSONObject();
+            pm2p5CCDescription.put("@type", "LevelProperty");
+            pm2p5CCDescription.put("title", "pm2p5CC");
+            pm2p5CCDescription.put("type", "number");
+            pm2p5CCDescription.put("description", "The current pm2p5CC in %");
+            pm2p5CCDescription.put("minimum", 0);
+            pm2p5CCDescription.put("maximum", 100);
+//            pm2p5CCDescription.put("unit", "percent");
+            pm2p5CCDescription.put("readOnly", true);
+            //从结构体中拿到pm2p5CC
+            this.pm2p5CC = new Value<>(dataStucture.get("pm2p5CC"));
+            this.addProperty(new Property(this,
+                                          "pm2p5CC",
+                                          pm2p5CC,
+                                          pm2p5CCDescription));
+            //4、pm10CC
+            JSONObject pm10CCDescription = new JSONObject();
+            pm10CCDescription.put("@type", "LevelProperty");
+            pm10CCDescription.put("title", "pm10CC");
+            pm10CCDescription.put("type", "number");
+            pm10CCDescription.put("description", "The current pm10CC in %");
+            pm10CCDescription.put("minimum", 0);
+            pm10CCDescription.put("maximum", 100);
+            //            pm10CCDescription.put("unit", "percent");
+            pm2p5CCDescription.put("readOnly", true);
+            //从结构体中拿到pm10CC
+            this.pm10CC = new Value<>(dataStucture.get("pm10CC"));
+            this.addProperty(new Property(this,
+                                          "pm10CC",
+                                          pm10CC,
+                                          pm10CCDescription));
+            //5、VOCH2S
+            JSONObject VOCH2SDescription = new JSONObject();
+            VOCH2SDescription.put("@type", "LevelProperty");
+            VOCH2SDescription.put("title", "VOCH2S");
+            VOCH2SDescription.put("type", "number");
+            VOCH2SDescription.put("description", "The current VOCH2S in %");
+            VOCH2SDescription.put("minimum", 0);
+            VOCH2SDescription.put("maximum", 100);
+            //            VOCH2SDescription.put("unit", "percent");
+            VOCH2SDescription.put("readOnly", true);
+            //从结构体中拿到VOCH2S
+            this.VOCH2S = new Value<>(dataStucture.get("VOCH2S"));
+            this.addProperty(new Property(this,
+                                          "VOCH2S",
+                                          VOCH2S,
+                                          VOCH2SDescription));
+            //6、CH20NH3
+            JSONObject CH20NH3Description = new JSONObject();
+            CH20NH3Description.put("@type", "LevelProperty");
+            CH20NH3Description.put("title", "CH20NH3");
+            CH20NH3Description.put("type", "number");
+            CH20NH3Description.put("description", "The current CH20NH3 in %");
+            CH20NH3Description.put("minimum", 0);
+            CH20NH3Description.put("maximum", 100);
+            //            CH20NH3Description.put("unit", "percent");
+            CH20NH3Description.put("readOnly", true);
+            //从结构体中拿到CH20NH3
+            this.CH20NH3 = new Value<>(dataStucture.get("CH20NH3"));
+            this.addProperty(new Property(this,
+                                          "CH20NH3",
+                                          CH20NH3,
+                                          CH20NH3Description));
             // Start a thread that polls the sensor reading every 3 seconds
             new Thread(() -> {
                 while (true) {
@@ -191,10 +298,30 @@ public class MultipleThings {
                         Thread.sleep(3000);
                         // Update the underlying value, which in turn notifies
                         // all listeners
-                        double newLevel = this.readFromGPIO();
+                        double[] newDataStructure = this.readFromGPIO();
+                        System.out.printf("setting new temperature level: %f\n",
+                                          newDataStructure[0]);
+                        this.temperature.notifyOfExternalUpdate(newDataStructure[0]);
+
                         System.out.printf("setting new humidity level: %f\n",
-                                          newLevel);
-                        this.level.notifyOfExternalUpdate(newLevel);
+                                          newDataStructure[1]);
+                        this.humidity.notifyOfExternalUpdate(newDataStructure[1]);
+
+                        System.out.printf("setting new pm2p5CC level: %f\n",
+                                          newDataStructure[2]);
+                        this.pm2p5CC.notifyOfExternalUpdate(newDataStructure[2]);
+
+                        System.out.printf("setting new pm10CC level: %f\n",
+                                          newDataStructure[3]);
+                        this.pm10CC.notifyOfExternalUpdate(newDataStructure[3]);
+
+                        System.out.printf("setting new VOCH2S level: %f\n",
+                                          newDataStructure[4]);
+                        this.VOCH2S.notifyOfExternalUpdate(newDataStructure[4]);
+
+                        System.out.printf("setting new CH20NH3 level: %f\n",
+                                          newDataStructure[5]);
+                        this.CH20NH3.notifyOfExternalUpdate(newDataStructure[5]);
                     } catch (InterruptedException e) {
                         throw new IllegalStateException(e);
                     }
@@ -205,8 +332,33 @@ public class MultipleThings {
         /**
          * Mimic an actual sensor updating its reading every couple seconds.
          */
-        private double readFromGPIO() {
-            return Math.abs(70.0d * Math.random() * (-0.5 + Math.random()));
+        private double[] readFromGPIO() {
+//            return Math.abs(70.0d * Math.random() * (-0.5 + Math.random()));
+            return new double[]{Math.abs(70.0d * Math.random() * (-0.5 + Math.random())),
+                                Math.abs(70.0d * Math.random() * (-0.5 + Math.random())),
+                                Math.abs(70.0d * Math.random() * (-0.5 + Math.random())),
+                                Math.abs(70.0d * Math.random() * (-0.5 + Math.random())),
+                                Math.abs(70.0d * Math.random() * (-0.5 + Math.random())),
+                                Math.abs(70.0d * Math.random() * (-0.5 + Math.random()))};
+        }
+
+        //设置传感器结构体
+        /**
+         * { temperature: 277,
+         *   humidity: 398,
+         *   pm2p5CC: 6,
+         *   pm10CC: 8,
+         *   VOCH2S: 5,
+         *   CH20NH3: 0 }
+         */
+        private void setDataStructure(double temperature, double humidity, double pm2p5CC,
+                                      double pm10CC, double VOCH2S, double CH20NH3) {
+            dataStucture.put("temperature",temperature);
+            dataStucture.put("humidity",humidity);
+            dataStucture.put("pm2p5CC",pm2p5CC);
+            dataStucture.put("pm10CC",pm10CC);
+            dataStucture.put("VOCH2S",VOCH2S);
+            dataStucture.put("CH20NH3",CH20NH3);
         }
     }
 }

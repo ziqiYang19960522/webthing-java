@@ -10,8 +10,5 @@
         <module name="webthing-java" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="webthing" target="1.8" />
-    </bytecodeTargetLevel>
   </component>
 </project>

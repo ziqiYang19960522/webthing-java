@@ -52,7 +52,6 @@ public class Property<T> {
         this.value = value;
         this.hrefPrefix = "";
         this.href = String.format("/properties/%s", this.name);
-
         if (metadata == null) {
             this.metadata = new JSONObject();
         } else {
